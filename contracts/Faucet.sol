@@ -3,7 +3,9 @@ pragma solidity ^0.8.23;
 
 contract Faucet {
   address private owner;
+  uint256 private constant REWARD_THRESHOLD = 5;
   mapping(address => uint256) private lastRequest;
+  mapping(address => uint256) private requestCount;
 
   constructor() {
     owner = msg.sender;
@@ -29,8 +31,13 @@ contract Faucet {
     }
     require(address(this).balance >= 0.001 ether, "Insufficient balance in the faucet");
 
+    uint256 amount = 0.001 ether;
+    requestCount[msg.sender] += 1;
+    if (requestCount[msg.sender] % REWARD_THRESHOLD == 0) {
+      amount = 0.002 ether;
+    }
     lastRequest[msg.sender] = block.timestamp;
-    payable(msg.sender).transfer(0.001 ether);
+    payable(msg.sender).transfer(amount);
   }
 
   receive() external payable {

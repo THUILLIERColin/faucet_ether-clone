@@ -12,8 +12,9 @@ contract FaucetTest is Test {
 
   address admin = address(0x123);
   address once_user = address(0x456);
-  address normal_user = address(0x478);
-  address abusive_user = address(0x789);
+  address normal_user = address(0x789);
+  address award_user = address(0x101);
+  address abusive_user = address(0x112);
 
   /// @notice Setup function to deploy the Faucet contract before each test
   function setUp() external {
@@ -48,7 +49,7 @@ contract FaucetTest is Test {
     vm.stopPrank();
   }
 
-  /// @notice Test to ensure an user can request ether from the faucet more than once per hour
+  /// @notice Test to an user can request ether from the faucet once per hour
   function test_twiceEtherAfterHour() external {
     vm.startPrank(normal_user);
     uint256 tmpBalance = address(faucet).balance;
@@ -63,6 +64,44 @@ contract FaucetTest is Test {
     faucet.requestEther();
     assertEq(normal_user.balance, 0.002 ether);
     assertEq(address(faucet).balance, tmpBalance - 0.001 ether);
+    vm.stopPrank();
+  }
+
+  /// @notice Test to give an user a reward after requesting ether from the faucet 5 times
+  function test_rewardThreshold() external {
+    uint256 tmpBalance = address(faucet).balance;
+
+    vm.startPrank(award_user);
+
+    faucet.requestEther(); // Request once
+    assertEq(award_user.balance, 0.001 ether);
+    assertEq(address(faucet).balance, tmpBalance - 0.001 ether);
+
+    vm.warp(block.timestamp + 1 hours);
+    faucet.requestEther(); // Request twice
+    assertEq(award_user.balance, 0.002 ether);
+    assertEq(address(faucet).balance, tmpBalance - 0.002 ether);
+
+    vm.warp(block.timestamp + 1 hours);
+    faucet.requestEther(); // Request thrice
+    assertEq(award_user.balance, 0.003 ether);
+    assertEq(address(faucet).balance, tmpBalance - 0.003 ether);
+
+    vm.warp(block.timestamp + 1 hours);
+    faucet.requestEther(); // Request four times
+    assertEq(award_user.balance, 0.004 ether);
+    assertEq(address(faucet).balance, tmpBalance - 0.004 ether);
+
+    vm.warp(block.timestamp + 1 hours);
+    faucet.requestEther(); // Request five times (reward)
+    assertEq(award_user.balance, 0.006 ether);
+    assertEq(address(faucet).balance, tmpBalance - 0.006 ether);
+
+    vm.warp(block.timestamp + 1 hours);
+    faucet.requestEther(); // Request six times
+    assertEq(award_user.balance, 0.007 ether);
+    assertEq(address(faucet).balance, tmpBalance - 0.007 ether);
+
     vm.stopPrank();
   }
 
