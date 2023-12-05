@@ -118,4 +118,30 @@ contract FaucetTest is Test {
     faucet.requestEther();
     vm.stopPrank();
   }
+
+  /// @notice Test to refill the balance of the faucet
+  function test_refill() external {
+    vm.startPrank(admin);
+    vm.deal(admin, 10 ether);
+    vm.deal(address(faucet), 0 ether);
+    payable(address(faucet)).transfer(0.001 ether);
+    assertEq(address(faucet).balance, 0.001 ether);
+    vm.stopPrank();
+  }
+
+  /// @notice Test to ensure an user cannot withdraw the balance of the faucet
+  function test_withdraw() external {
+    vm.startPrank(normal_user);
+    vm.expectRevert();
+    faucet.withdraw();
+    vm.stopPrank();
+  }
+
+  /// @notice Test to admin can withdraw the balance of the faucet
+  function test_adminWithdraw() external {
+    vm.deal(address(faucet), 100 ether);
+    vm.prank(admin);
+    faucet.withdraw();
+    assertEq(address(faucet).balance, 0 ether);
+  }
 }

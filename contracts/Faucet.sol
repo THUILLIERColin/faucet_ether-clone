@@ -40,6 +40,11 @@ contract Faucet {
     payable(msg.sender).transfer(amount);
   }
 
+  /// @notice Withdraw the balance of the faucet
+  function withdraw() external onlyOwner {
+    payable(msg.sender).transfer(address(this).balance);
+  }
+
   receive() external payable {
     
   }
