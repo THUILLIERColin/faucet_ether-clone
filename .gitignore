@@ -337,3 +337,4 @@ docs/
 
 # Dotenv file
 .env
+lcov.info
