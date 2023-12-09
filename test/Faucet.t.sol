@@ -143,5 +143,6 @@ contract FaucetTest is Test {
     vm.prank(admin);
     faucet.withdraw();
     assertEq(address(faucet).balance, 0 ether);
+    assertEq(admin.balance, 100 ether);
   }
 }
