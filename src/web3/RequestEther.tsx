@@ -4,6 +4,7 @@ import IpTable from "../components/IpTable";
 import { useAccount } from "wagmi";
 import { useFaucetRequestEther } from "./wagmi.generated";
 import shortAddr from "../utils/shortAddr";
+import Countdown from "../components/Countdown";
 
 interface RequestEtherProps {}
 
@@ -100,6 +101,9 @@ const RequestEther: FC<RequestEtherProps> = () => {
                   <p className="mt-4 text-sm text-gray-500">
                     You can request Ether every 60 minutes
                   </p>
+                  <Countdown isCounting={buttonClass === "w-full bg-gray-400 cursor-not-allowed"}
+                    time={60}
+                  />
                 </>
               ) : (
                 <>
