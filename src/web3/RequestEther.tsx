@@ -1,5 +1,6 @@
 import { useEffect, useState, type FC } from "react";
 import Button from "../components/Button";
+import IpTable from "../components/IpTable";
 import { useAccount } from "wagmi";
 import { useFaucetRequestEther } from "./wagmi.generated";
 import shortAddr from "../utils/shortAddr";
@@ -26,9 +27,19 @@ const RequestEther: FC<RequestEtherProps> = () => {
 
   useEffect(() => {
     /* Récupérer l'adresse IP */
-    fetch("https://api.ipify.org?format=json")
-      .then((response) => response.json())
-      .then((data) => setIPAddress(data.ip));
+    fetch("https://geolocation-db.com/json/")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch IP address");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setIPAddress(data.IPv4);
+      })
+      .catch((error) => {
+        console.error("Erreur lors de la récupération de l'adresse IP", error);
+      });
   }, []);
 
   /* Gestion de la demande d'Ether */
@@ -54,7 +65,7 @@ const RequestEther: FC<RequestEtherProps> = () => {
     if (isConnected && address) {
       try {
         write?.();
-      }catch(e){
+      } catch (e) {
         console.log(e);
       }
       setTimeout(() => {
@@ -65,36 +76,15 @@ const RequestEther: FC<RequestEtherProps> = () => {
   };
 
   return (
-    <> 
-      <div>
-        <table>
-          <thead>
-            <tr>
-              <th className="px-4 py-2">Adresse IP</th>
-              <th className="px-4 py-2">Date et heure</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Object.entries(clickRecords).map(([ip, timestamp]) => (
-              <tr key={ip}>
-                <td className="border px-4 py-2">{ip}</td>
-                <td className="border px-4 py-2">
-                  {timestamp.toDateString() +
-                    " " +
-                    timestamp.toLocaleTimeString()}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+    <>
+      <IpTable ipAddress={ipAddress} clickRecords={clickRecords} />
       <div className="flex items-center justify-center flex-grow">
         <div className="min-w-[400px] border border-gray-400 rounded">
           <div className="p-4">
             <div className="flex flex-col items-center justify-center w-full h-full">
-              {isConnected && address ? (
+              <p className="mb-4 text-xl font-bold">Request Ether</p>
+              {isConnected && address && ipAddress ? (
                 <>
-                  <p className="mb-4 text-xl font-bold">Request Ether</p>
                   <p className="mb-4 text-lg">
                     Request Ether from the Rinkeby Faucet for your address{" "}
                     {shortAddr(address)}
@@ -107,11 +97,15 @@ const RequestEther: FC<RequestEtherProps> = () => {
                   >
                     Request Ether
                   </Button>
+                  <p className="mt-4 text-sm text-gray-500">
+                    You can request Ether every 60 minutes
+                  </p>
                 </>
               ) : (
                 <>
-                  <p className="mb-4 text-xl font-bold">Request Ether</p>
-                  <p className="mb-4 text-lg">Connect to request Ether</p>
+                  <p className="mb-4 text-lg">
+                    Connect to request Ether or wait ip address
+                  </p>
                 </>
               )}
             </div>
