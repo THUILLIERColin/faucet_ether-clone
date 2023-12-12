@@ -41,3 +41,5 @@ Pour utiliser le faucet, il faut avoir un compte sur un portefeuille Ethereum. P
 Pour demander des ethers, il faut cliquer sur le bouton "Connect" en haut à droite puis se connecter avec RabbitWallet. 
 Une fois connecté, vous pouvez demander des ethers en cliquant sur le bouton "Request ether" au centre.
 Vous pouvez demander des ethers toutes les heures.
+
+@ThuillierColin
