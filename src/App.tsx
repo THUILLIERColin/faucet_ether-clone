@@ -2,6 +2,7 @@ import './App.css';
 import Wagmi from './web3/Wagmi';
 import Header from './web3/Header';
 import RequestEther from './web3/RequestEther';
+import Withdraw from './web3/Withdraw';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
 
         <RequestEther />
         
+        <Withdraw />
       </div>
     </Wagmi>
   );
